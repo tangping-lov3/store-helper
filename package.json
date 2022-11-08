@@ -1,10 +1,32 @@
 {
-  "name": "store-helper",
+  "name": "@tonyptang/store-helper",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup && cp src/types/vuex.d.ts dist"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./src/*"
+      ]
+    }
+  },
+  "exports": {
+    "./*": "./*",
+    "./pinia": {
+      "require": "./dist/pinia.js",
+      "import": "./dist/pinia.mjs",
+      "types": "./dist/pinia.d.ts"
+    },
+    "./vuex": {
+      "require": "./dist/vuex.js",
+      "import": "./dist/vuex.mjs",
+      "types": "./dist/vuex.d.ts"
+    }
   },
   "keywords": [],
   "author": "",
@@ -15,9 +37,18 @@
     "eslint": "^8.27.0",
     "pinia": "^2.0.23",
     "tsup": "^6.4.0",
-    "typescript": "^4.8.4"
+    "typescript": "^4.8.4",
+    "vue": "^3.2.41",
+    "vuex": "^4.1.0"
   },
   "dependencies": {
-    "@tonyptang/vuex-helper-composition-api": "^1.2.0"
-  }
+    "@tonyptang/vuex-helper-composition-api": "^1.2.0",
+    "vue-demi": "^0.13.11"
+  },
+  "bundledDependencies": ["vue-demi"],
+  "files": [
+    "dist",
+    "src/types",
+    "node_modules"
+  ]
 }
