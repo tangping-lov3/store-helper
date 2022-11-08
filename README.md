@@ -1,9 +1,30 @@
 
 ```ts
-// npm i @tonyptang/vuex-helper-composition-api
-
-import { useMapState } from '@tonyptang/store-helper'
-
+// npm i @tonyptang/store-helper
+// for vuex
+import { useMapState } from '@tonyptang/store-helper/vuex'
 const { state } = useMapState('moduleName', ['state'])
 
+```
+
+```ts
+// for pinia
+import { useStoreToRefs } from '@tonyptang/store-helper/pinia'
+
+const store = defineStore('id', () => {
+  const count = ref(0)
+
+  const increment = () => count.value++
+  return {
+    count,
+    increment
+  }
+})
+
+export const countStore = () => useStoreToRefs(store)
+
+// usage
+
+const { count, increment } = countStore()
+console.log(count.value) // 0
 ```
