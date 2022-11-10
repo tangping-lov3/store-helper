@@ -7,35 +7,35 @@ export default defineConfig([
     external: ['vuex', 'vue'],
     format: [
       'cjs',
-      'esm',
+      'esm'
     ],
     plugins: [],
     esbuildPlugins: [
       swcPlugin({
         jsc: {
-          target: 'es5',
-        },
-      }),
-    ],
+          target: 'es5'
+        }
+      })
+    ]
   },
   {
     entry: ['./src/pinia.ts'],
     external: [
-      'pinia',
+      'pinia'
     ],
     format: [
       'cjs',
-      'esm',
+      'esm'
     ],
     plugins: [],
     esbuildPlugins: [
       swcPlugin({
         jsc: {
-          target: 'es5',
-        },
-      }),
+          target: 'es5'
+        }
+      })
     ],
     outDir: 'dist',
-    dts: true,
-  },
+    dts: true
+  }
 ])

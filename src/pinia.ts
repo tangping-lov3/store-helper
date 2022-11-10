@@ -5,7 +5,7 @@ export function useStoreToRefs<T extends ReturnType<typeof defineStore> = any>(s
   const store = storeCreator(pinia) as unknown as ReturnType<T>
   const data = {
     ...store,
-    ..._storeToRefs(store),
+    ..._storeToRefs(store)
   } as Merge<PickFunctions<ReturnType<T>>, ReturnType<typeof _storeToRefs<ReturnType<T>>>>
   return data
 }
