@@ -6,10 +6,6 @@ interface MapReturnd {
   [key: string]: Function
 }
 
-interface ComputedReturnd {
-  [key: string]: ComputedRef<Function>
-}
-
 const bindContext = (fn: Function, ctx: AppConfig['globalProperties']) => fn.bind(ctx)
 
 const bindContexts = (target: MapReturnd, ctx: AppConfig['globalProperties']) => {
@@ -24,7 +20,7 @@ const getContext = () => {
 
 const withComputed = (target: MapReturnd) => {
   const ctx = getContext()
-  const returnd = {} as ComputedReturnd
+  const returnd = {} as any
   Object.entries(target).forEach(([key, val]) => {
     const computedFn = bindContext(val, ctx)
     returnd[key] = computed(computedFn)
@@ -32,22 +28,37 @@ const withComputed = (target: MapReturnd) => {
   return returnd
 }
 
-type UseMapState = (...args: Parameters<typeof mapState>) => Record<string, ComputedRef>
+export function useMapState<T extends string[]>(ns: string, getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
+export function useMapState<T extends string[]>(getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
+export function useMapState<T extends string[]>(ns: string, getters?: T): Record<Extract<PickReturnType<T>, string>, ComputedRef> {
+  return withComputed(mapState(ns, getters!))
+}
 
-export const useMapState: UseMapState = (...args) => withComputed(mapState(...args))
+export function useMapGetters<T extends string[]>(ns: string, getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
+export function useMapGetters<T extends string[]>(getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
+export function useMapGetters<T extends string[]>(ns: string, getters?: T): Record<Extract<PickReturnType<T>, string>, ComputedRef> {
+  return withComputed(mapGetters(ns, getters!))
+}
 
-export const useMapGetters = (...args: Parameters<typeof mapGetters>): Record<string, ComputedRef> => withComputed(mapGetters(...args))
-
-export const useMapActions = (...args: Parameters<typeof mapActions>) => {
-  const actions = mapActions(...args)
+export function useMapActions<T extends string[]>(ns: string, map: T): Record<Extract<PickReturnType<T>, string>, Function>
+export function useMapActions<T extends string[]>(map: T): Record<Extract<PickReturnType<T>, string>, Function>
+export function useMapActions<T extends string[]>(ns: string, map?: T): Record<Extract<PickReturnType<T>, string>, Function> {
+  const actions = mapActions(ns, map!)
   const ctx = getContext()
   bindContexts(actions, ctx)
-  return actions
+  return actions as unknown as Record<Extract<PickReturnType<T>, string>, Function>
 }
 
-export const useMapMutations = (...args: Parameters<typeof mapMutations>) => {
-  const mutations = mapMutations(...args)
+export function useMapMutations<T extends string[]>(ns: string, map: T): Record<Extract<PickReturnType<T>, string>, Function>
+export function useMapMutations<T extends string[]>(map: T): Record<Extract<PickReturnType<T>, string>, Function>
+export function useMapMutations<T extends string[]>(ns: string, map?: T): Record<Extract<PickReturnType<T>, string>, Function> {
+  const mutations = mapMutations(ns, map!)
   const ctx = getContext()
   bindContexts(mutations, ctx)
-  return mutations
+  return mutations as unknown as Record<Extract<PickReturnType<T>, string>, Function>
 }
+
+type PickReturnType<T> = Exclude<{
+  [K in keyof T]: T[K]
+}[Exclude<keyof T, 'length'>], (...args: any[]) => any>
+

@@ -1,11 +1,11 @@
 {
   "name": "@tonyptang/store-helper",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsup && cp src/types/vuex.d.ts dist"
+    "build": "tsup"
   },
   "typesVersions": {
     "*": {

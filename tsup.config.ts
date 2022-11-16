@@ -16,7 +16,8 @@ export default defineConfig([
           target: 'es5'
         }
       })
-    ]
+    ],
+    dts: true
   },
   {
     entry: ['./src/pinia.ts'],
