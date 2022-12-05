@@ -30,18 +30,24 @@ const withComputed = (target: MapReturnd) => {
 
 export function useMapState<T extends string[]>(ns: string, getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
 export function useMapState<T extends string[]>(getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
+export function useMapState<T extends Record<string, any>>(ns: string, getters: T): Record<keyof T, ComputedRef>
+export function useMapState<T extends Record<string, any>>(getters: T): Record<keyof T, ComputedRef>
 export function useMapState<T extends string[]>(ns: string, getters?: T): Record<Extract<PickReturnType<T>, string>, ComputedRef> {
   return withComputed(mapState(ns, getters!))
 }
 
 export function useMapGetters<T extends string[]>(ns: string, getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
 export function useMapGetters<T extends string[]>(getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
+export function useMapGetters<T extends Record<string, any>>(ns: string, getters: T): Record<keyof T, ComputedRef>
+export function useMapGetters<T extends Record<string, any>>(getters: T): Record<keyof T, ComputedRef>
 export function useMapGetters<T extends string[]>(ns: string, getters?: T): Record<Extract<PickReturnType<T>, string>, ComputedRef> {
   return withComputed(mapGetters(ns, getters!))
 }
 
 export function useMapActions<T extends string[]>(ns: string, map: T): Record<Extract<PickReturnType<T>, string>, Function>
 export function useMapActions<T extends string[]>(map: T): Record<Extract<PickReturnType<T>, string>, Function>
+export function useMapActions<T extends Record<string, any>>(ns: string, map: T): Record<keyof T, Function>
+export function useMapActions<T extends Record<string, any>>(map: T): Record<keyof T, Function>
 export function useMapActions<T extends string[]>(ns: string, map?: T): Record<Extract<PickReturnType<T>, string>, Function> {
   const actions = mapActions(ns, map!)
   const ctx = getContext()
@@ -50,7 +56,9 @@ export function useMapActions<T extends string[]>(ns: string, map?: T): Record<E
 }
 
 export function useMapMutations<T extends string[]>(ns: string, map: T): Record<Extract<PickReturnType<T>, string>, Function>
+export function useMapMutations<T extends Record<string, any>>(ns: string, map: T): Record<keyof T, Function>
 export function useMapMutations<T extends string[]>(map: T): Record<Extract<PickReturnType<T>, string>, Function>
+export function useMapMutations<T extends Record<string, any>>(map: T): Record<keyof T, Function>
 export function useMapMutations<T extends string[]>(ns: string, map?: T): Record<Extract<PickReturnType<T>, string>, Function> {
   const mutations = mapMutations(ns, map!)
   const ctx = getContext()
