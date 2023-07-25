@@ -1,9 +1,9 @@
-import type { AppConfig, ComputedRef } from 'vue-demi'
+import type { AppConfig, ComputedGetter, ComputedRef, WritableComputedOptions, WritableComputedRef } from 'vue-demi'
 import { computed, getCurrentInstance } from 'vue-demi'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 
 interface MapReturnd {
-  [key: string]: Function
+  [key: string]: ComputedGetter<unknown>
 }
 
 const bindContext = (fn: Function, ctx: AppConfig['globalProperties']) => fn.bind(ctx)
@@ -18,22 +18,43 @@ const getContext = () => {
   return currentInstance!.appContext.config.globalProperties
 }
 
-const withComputed = (target: MapReturnd) => {
+const withComputed = (target: MapReturnd, { allowValueChange = false, ns }: { allowValueChange?: boolean; ns?: string | string[] } = {}) => {
   const ctx = getContext()
   const returnd = {} as any
   Object.entries(target).forEach(([key, val]) => {
     const computedFn = bindContext(val, ctx)
-    returnd[key] = computed(computedFn)
+    if (allowValueChange) {
+      const mapedMutations = typeof ns === 'string' ? useMapMutations(ns, ['_SET_STATE']) : useMapMutations(['_SET_STATE'])
+      const update = mapedMutations._SET_STATE
+      const writableComputedOptions: WritableComputedOptions<unknown> = {
+        get: computedFn,
+        set: (v: any) => {
+          update({
+            key,
+            value: v
+          })
+        }
+      }
+      returnd[key] = computed(writableComputedOptions)
+    }
+    else {
+      returnd[key] = computed(computedFn)
+    }
   })
   return returnd
 }
 
-export function useMapState<T extends string[]>(ns: string, getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
-export function useMapState<T extends string[]>(getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
-export function useMapState<T extends Record<string, any>>(ns: string, getters: T): Record<keyof T, ComputedRef>
-export function useMapState<T extends Record<string, any>>(getters: T): Record<keyof T, ComputedRef>
-export function useMapState<T extends string[]>(ns: string, getters?: T): Record<Extract<PickReturnType<T>, string>, ComputedRef> {
-  return withComputed(mapState(ns, getters!))
+export function useMapState<T extends string[], AllowValueChange extends boolean = false>(ns: string, getters: T, allowValueChange?: AllowValueChange): Record<Extract<PickReturnType<T>, string>, AllowValueChange extends true ? WritableComputedRef<any> : ComputedRef>
+export function useMapState<T extends string[], AllowValueChange extends boolean = false>(getters: T, allowValueChange?: AllowValueChange): Record<Extract<PickReturnType<T>, string>, AllowValueChange extends true ? WritableComputedRef<any> : ComputedRef>
+export function useMapState<T extends Record<string, any>, AllowValueChange extends boolean = false>(ns: string, getters: T, allowValueChange?: AllowValueChange): Record<keyof T, AllowValueChange extends true ? WritableComputedRef<any> : ComputedRef>
+export function useMapState<T extends Record<string, any>, AllowValueChange extends boolean = false>(getters: T, allowValueChange?: AllowValueChange): Record<keyof T, AllowValueChange extends true ? WritableComputedRef<any> : ComputedRef>
+export function useMapState<T extends string[], AllowValueChange extends boolean = false>(ns: string, getters?: T | AllowValueChange, allowValueChange?: AllowValueChange): Record<Extract<PickReturnType<T>, string>, AllowValueChange extends true ? WritableComputedRef<any> : ComputedRef> {
+  getters = typeof getters === 'boolean' ? undefined : getters
+  allowValueChange = typeof getters === 'boolean' ? getters : allowValueChange
+  return withComputed(mapState(ns, getters!), {
+    allowValueChange,
+    ns
+  })
 }
 
 export function useMapGetters<T extends string[]>(ns: string, getters: T): Record<Extract<PickReturnType<T>, string>, ComputedRef>
@@ -69,4 +90,3 @@ export function useMapMutations<T extends string[]>(ns: string, map?: T): Record
 type PickReturnType<T> = Exclude<{
   [K in keyof T]: T[K]
 }[Exclude<keyof T, 'length'>], (...args: any[]) => any>
-

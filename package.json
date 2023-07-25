@@ -1,11 +1,13 @@
 {
   "name": "@tonyptang/store-helper",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsup"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "p": "npm publish --access public"
   },
   "typesVersions": {
     "*": {
@@ -41,13 +43,13 @@
     "vuex": "^4.1.0"
   },
   "dependencies": {
-    "@tonyptang/vuex-helper-composition-api": "^1.2.0",
     "vue-demi": "^0.13.11"
   },
+  "bundledDependencies": [
+    "vue-demi"
+  ],
   "files": [
     "dist",
-    "src/types",
-    "node_modules",
     "README.md"
   ]
 }
