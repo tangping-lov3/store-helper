@@ -5,6 +5,10 @@
 import { useMapState } from '@tonyptang/store-helper/vuex'
 const { state } = useMapState('moduleName', ['state'])
 
+const { state } = useMapState('moduleName', ['state'], true)
+
+state.value = 'changed'
+
 ```
 
 ```ts
